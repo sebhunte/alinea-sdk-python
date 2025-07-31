@@ -171,23 +171,7 @@ ALINEA_API_KEY=alinea_sk_your_secure_32_char_key_here
 ALINEA_BASE_URL=http://localhost:8000
 ```
 
-### API Key Management
 
-```python
-# ✅ SECURE - Use environment variables
-api_key = os.getenv("ALINEA_API_KEY")
-
-# ❌ NEVER - Hardcode API keys
-api_key = "alinea_sk_hardcoded_key"  # DON'T DO THIS!
-```
-
-### .gitignore Setup
-
-The repository includes a comprehensive `.gitignore` that prevents committing:
-- `.env` files
-- API keys
-- Temporary files
-- Database files
 
 ## 📁 **Project Structure**
 
@@ -226,12 +210,7 @@ export ALINEA_API_KEY=your_api_key_here
 # Run quickstart
 python examples/quickstart.py
 
-# Run full backend demo
-python examples/real_backend_demo.py
 
-# Run with mock backend (for testing)
-python examples/demo_with_mock_backend.py
-```
 
 ### Testing Connection
 
@@ -242,19 +221,6 @@ python examples/real_backend_test.py
 
 ## 🐛 **Troubleshooting**
 
-### Common Issues
-
-**Connection Refused:**
-```
-❌ Cannot connect to host localhost:8000
-```
-**Solution:** Ensure your Alinea-AI backend is running on localhost:8000
-
-**Authentication Failed:**
-```
-❌ Authentication failed. Check your API key.
-```
-**Solution:** Verify your `ALINEA_API_KEY` environment variable is set correctly
 
 **Import Errors:**
 ```
@@ -273,17 +239,6 @@ ModuleNotFoundError: No module named 'alinea'
 ## 📄 **License**
 
 This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
-
-## 🔗 **Related Projects**
-
-- [Alinea-AI Backend](https://github.com/your-org/alinea-ai) - The backend service
-- [Alinea Documentation](https://docs.alinea.ai) - Complete documentation
-
-## 📞 **Support**
-
-- 📧 Email: support@alinea.ai
-- 💬 Discord: [Alinea Community](https://discord.gg/alinea)
-- 📚 Docs: [docs.alinea.ai](https://docs.alinea.ai)
 
 ---
 
