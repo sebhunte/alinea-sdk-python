@@ -1,4 +1,4 @@
-# 🚀 Alinea SDK for Python
+﻿# 🚀 Alinea SDK for Python
 
 **Memory-First Coordination SDK for Multi-Agent Systems**
 
@@ -11,6 +11,8 @@ Connect your multi-agent systems to the powerful Alinea-AI backend for **memory-
 ## ✨ **Key Features**
 
 🧠 **Memory-First Coordination** - Agents learn from experience and coordinate intelligently  
+🔮 **Forward Simulation** - Predict conflicts and risks before taking actions  
+🤔 **What-If Analysis** - Natural language strategic planning and decision support  
 🔍 **Real-Time Causality Analysis** - Trace agent interactions and debug complex behaviors  
 ⚡ **Multi-Agent Orchestration** - Coordinate multiple agents with conflict resolution  
 🌍 **Shared World State** - Consistent state management across distributed agents  
@@ -22,11 +24,7 @@ Connect your multi-agent systems to the powerful Alinea-AI backend for **memory-
 ### 1. Installation
 
 ```bash
-<<<<<<< HEAD
 git clone https://github.com/sebhunte/alinea-sdk-python.git
-=======
-git clone https://github.com/your-org/alinea-sdk-python.git
->>>>>>> 192d6d2f7e8cb81197e8653bdd69966bf2eafca4
 cd alinea-sdk-python
 pip install -e .
 ```
@@ -116,6 +114,35 @@ confidence = await client.get_pattern_confidence("pattern_id")
 metrics = await client.get_adaptation_metrics()
 ```
 
+### Forward Simulation (NEW! 🔮)
+
+```python
+# Predict conflicts before taking action
+simulation = await client.simulate_action(
+    agent_id="agent_1",
+    action="process_large_dataset", 
+    resources=["database", "gpu_cluster"],
+    look_ahead_minutes=5
+)
+
+if simulation.risk_score > 0.7:
+    # High risk - use recommendations
+    print(f"⚠️ Risk detected: {simulation.recommendations}")
+    
+# Strategic what-if analysis
+what_if = await client.what_if_analysis(
+    "What if we double the number of processing agents?"
+)
+print(f"Analysis: {what_if.analysis}")
+
+# Get decision-support questions
+questions = await client.get_agent_questions(
+    agent_id="agent_1",
+    action="scale_system",
+    resources=["compute_cluster"]
+)
+```
+
 ## 🏗️ **Architecture**
 
 ```mermaid
@@ -159,16 +186,12 @@ async def simple_agent():
 result = asyncio.run(simple_agent())
 ```
 
-<<<<<<< HEAD
 ### LLM-Based Research Assistant Workflow
 
 ```python
 # See examples/llm_research_workflow.py for complete implementation
 # Multi-agent LLM system with Research, Analysis, Writing & Review agents
 ```
-
-=======
->>>>>>> 192d6d2f7e8cb81197e8653bdd69966bf2eafca4
 ### Multi-Agent Trading System
 
 ```python
@@ -185,7 +208,6 @@ ALINEA_API_KEY=alinea_sk_your_secure_32_char_key_here
 ALINEA_BASE_URL=http://localhost:8000
 ```
 
-<<<<<<< HEAD
 ### API Key Management
 
 ```python
@@ -203,9 +225,6 @@ The repository includes a comprehensive `.gitignore` that prevents committing:
 - API keys
 - Temporary files
 - Database files
-=======
-
->>>>>>> 192d6d2f7e8cb81197e8653bdd69966bf2eafca4
 
 ## 📁 **Project Structure**
 
@@ -219,10 +238,7 @@ alinea-sdk-python/
 ├── examples/                 # Usage examples
 │   ├── quickstart.py         # Simple example
 │   ├── real_backend_demo.py  # Complete demo
-<<<<<<< HEAD
 │   ├── llm_research_workflow.py  # LLM-based workflow
-=======
->>>>>>> 192d6d2f7e8cb81197e8653bdd69966bf2eafca4
 │   └── demo_with_mock_backend.py
 ├── tests/                    # Test cases
 ├── scripts/                  # Utility scripts
@@ -248,7 +264,6 @@ export ALINEA_API_KEY=your_api_key_here
 # Run quickstart
 python examples/quickstart.py
 
-<<<<<<< HEAD
 # Run LLM research workflow
 python examples/llm_research_workflow.py
 
@@ -258,9 +273,6 @@ python examples/real_backend_demo.py
 # Run with mock backend (for testing)
 python examples/demo_with_mock_backend.py
 ```
-=======
-
->>>>>>> 192d6d2f7e8cb81197e8653bdd69966bf2eafca4
 
 ### Testing Connection
 
@@ -271,7 +283,6 @@ python examples/real_backend_test.py
 
 ## 🐛 **Troubleshooting**
 
-<<<<<<< HEAD
 ### Common Issues
 
 **Connection Refused:**
@@ -285,8 +296,6 @@ python examples/real_backend_test.py
 ❌ Authentication failed. Check your API key.
 ```
 **Solution:** Verify your `ALINEA_API_KEY` environment variable is set correctly
-=======
->>>>>>> 192d6d2f7e8cb81197e8653bdd69966bf2eafca4
 
 **Import Errors:**
 ```
@@ -306,7 +315,6 @@ ModuleNotFoundError: No module named 'alinea'
 
 This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
 
-<<<<<<< HEAD
 ## 🔗 **Related Projects**
 
 - [Alinea-AI Backend](https://github.com/your-org/alinea-ai) - The backend service
@@ -321,8 +329,3 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 ---
 
 **Built with ❤️ for the multi-agent future** 🤖✨
-=======
----
-
-**Built with ❤️ for the multi-agent future** 🤖✨
->>>>>>> 192d6d2f7e8cb81197e8653bdd69966bf2eafca4

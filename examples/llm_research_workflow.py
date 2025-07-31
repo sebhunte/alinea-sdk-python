@@ -71,17 +71,50 @@ class LLMAgent:
     async def coordinate_action(self, action: str, resources: List[str], context: Dict[str, Any]) -> ActionResult:
         """Coordinate action with other agents using Alinea's intend/act pattern."""
         try:
-            # Step 1: Declare intention
+            # 🔮 STEP 1: FORWARD SIMULATION (NEW!)
+            # Simulate the action before execution to predict conflicts
+            simulation = await self.alinea.simulate_action(
+                agent_id=self.agent_id,
+                action=action,
+                resources=resources,
+                look_ahead_minutes=3,  # Look 3 minutes ahead
+                context=context
+            )
+            
+            logger.info(f"🔮 {self.agent_id} simulation: risk_score={simulation.risk_score:.2f}, safe={simulation.safe_to_proceed}")
+            
+            # 🤔 STEP 2: INTELLIGENT DECISION MAKING
+            if simulation.risk_score > 0.7:
+                logger.warning(f"⚠️ High risk detected for {action}. Recommendations: {simulation.recommendations}")
+                
+                # Get decision-support questions for high-risk actions
+                questions = await self.alinea.get_agent_questions(
+                    agent_id=self.agent_id,
+                    action=action,
+                    resources=resources,
+                    context=context
+                )
+                
+                for q in questions[:2]:  # Show top 2 questions
+                    logger.info(f"❓ Decision question: {q.question_text}")
+                
+                # For demo: Use alternative timing if suggested
+                if simulation.alternative_timing:
+                    logger.info(f"⏰ Using alternative timing: {simulation.alternative_timing}")
+                    # In a real system, you'd parse and wait
+                    await asyncio.sleep(1)  # Brief delay to simulate timing optimization
+            
+            # 📋 STEP 3: DECLARE INTENTION
             intention = await self.alinea.intend(
                 agent_id=self.agent_id,
                 action=action,
                 affected_resources=resources,
-                context=context
+                context={**context, "simulation_risk_score": simulation.risk_score}
             )
             
-            logger.info(f"🎯 {self.agent_id} intends: {action}")
+            logger.info(f"🎯 {self.agent_id} intends: {action} (risk-aware)")
             
-            # Step 2: Execute coordinated action
+            # 🎬 STEP 4: EXECUTE COORDINATED ACTION
             result = await self.alinea.act(intention)
             
             if result.outcome == "success":
@@ -484,6 +517,92 @@ class LLMResearchWorkflow:
         except Exception as e:
             logger.warning(f"⚠️ Could not get insights: {e}")
     
+    async def demonstrate_forward_simulation(self):
+        """
+        🔮 Demonstrate the powerful forward simulation capabilities for LLM agents.
+        
+        This shows how agents can predict conflicts, analyze what-if scenarios,
+        and make intelligent decisions using simulation.
+        """
+        logger.info("\n" + "="*60)
+        logger.info("🔮 FORWARD SIMULATION DEMONSTRATION")
+        logger.info("="*60)
+        
+        try:
+            # 1. Check simulation health
+            health = await self.alinea.get_simulation_health()
+            logger.info(f"📊 Simulation Health:")
+            logger.info(f"  - Enabled: {health.simulation_enabled}")
+            logger.info(f"  - Prediction Accuracy: {health.prediction_accuracy:.2%}")
+            logger.info(f"  - Total Simulations: {health.total_simulations_run}")
+            logger.info(f"  - System Load: {health.system_load:.2%}")
+            
+            # 2. What-if analysis for strategic planning
+            logger.info("\n🤔 What-If Analysis Examples:")
+            
+            strategic_questions = [
+                "What if we increase the research depth for complex topics?",
+                "What would happen if the analysis agent processes multiple research tasks simultaneously?",
+                "How would adding a fact-checking agent affect overall quality?",
+                "What if we prioritize speed over thoroughness in the writing phase?"
+            ]
+            
+            for question in strategic_questions[:2]:  # Demo first 2 questions
+                what_if = await self.alinea.what_if_analysis(question)
+                logger.info(f"  ❓ Q: {question}")
+                logger.info(f"  💡 A: {what_if.analysis[:100]}...")
+                logger.info(f"  📊 Confidence: {what_if.confidence:.2%}")
+                if what_if.recommendations:
+                    logger.info(f"  🎯 Top Recommendation: {what_if.recommendations[0]}")
+                logger.info("")
+            
+            # 3. Get simulation configuration
+            config = await self.alinea.get_simulation_config()
+            logger.info(f"⚙️ Simulation Configuration:")
+            logger.info(f"  - Look-ahead Default: {config.default_look_ahead_minutes} minutes")
+            logger.info(f"  - Risk Threshold: {config.risk_score_threshold:.1%}")
+            logger.info(f"  - Max Concurrent: {config.max_concurrent_simulations}")
+            logger.info(f"  - Cache Enabled: {config.cache_results}")
+            
+            # 4. Simulate a complex multi-agent scenario
+            logger.info("\n🎯 Complex Scenario Simulation:")
+            
+            from alinea.models import ForwardSimulationScenario
+            
+            scenario = ForwardSimulationScenario(
+                scenario_id="llm_workflow_stress_test",
+                name="High-Load Research Workflow",
+                description="Simulate 5 research tasks processing simultaneously with shared resources",
+                focus_agents=["research_agent", "analysis_agent", "writing_agent"],
+                initial_conditions={
+                    "concurrent_tasks": 5,
+                    "shared_resources": ["knowledge_base", "llm_api", "quality_checker"],
+                    "system_load": 0.8
+                },
+                simulation_duration_minutes=15,
+                expected_outcomes=[
+                    {"metric": "completion_rate", "expected_value": 0.9},
+                    {"metric": "avg_quality_score", "expected_value": 0.85},
+                    {"metric": "resource_conflicts", "expected_value": 3}
+                ]
+            )
+            
+            scenario_result = await self.alinea.run_forward_simulation(scenario)
+            logger.info(f"  📊 Scenario: {scenario.name}")
+            logger.info(f"  🎯 Status: {scenario_result['status']}")
+            logger.info(f"  ⚡ Execution Time: {scenario_result['execution_time_ms']}ms")
+            logger.info(f"  🎯 Confidence: {scenario_result['confidence_score']:.2%}")
+            
+            if scenario_result['recommendations']:
+                logger.info(f"  💡 Key Recommendation: {scenario_result['recommendations'][0]}")
+            
+            logger.info("\n✅ Forward Simulation Demonstration Complete!")
+            logger.info("🔮 LLM agents can now predict conflicts and optimize decisions!")
+            
+        except Exception as e:
+            logger.error(f"❌ Forward simulation demo failed: {e}")
+            await self.trace_failure_causality(f"simulation_demo_{str(e)}")
+    
     async def cleanup(self):
         """Clean up resources."""
         logger.info("🧹 Cleaning up workflow...")
@@ -570,9 +689,15 @@ async def main():
         
         await workflow.get_workflow_insights()
         
+        # 🔮 NEW: Demonstrate Forward Simulation Capabilities
+        await workflow.demonstrate_forward_simulation()
+        
         logger.info("\n🎉 LLM Research Workflow Demo Complete!")
         logger.info("✅ All agents coordinated successfully using Alinea")
         logger.info("✅ Memory-first coordination demonstrated")
+        logger.info("✅ Forward simulation for predictive intelligence")
+        logger.info("✅ What-if analysis for strategic planning")
+        logger.info("✅ Decision-support questions for LLM agents")
         logger.info("✅ Causality tracing available for debugging")
         logger.info("✅ Secure API key management implemented")
         

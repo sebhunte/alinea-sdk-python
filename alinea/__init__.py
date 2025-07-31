@@ -15,7 +15,14 @@ from .models import (
     CounterfactualAnalysis,
     WorldSnapshot,
     MemoryPattern,
-    APIResponse
+    APIResponse,
+    # Forward Simulation Models
+    SimulationResult,
+    WhatIfAnalysis,
+    AgentQuestion,
+    SimulationHealth,
+    SimulationConfig,
+    ForwardSimulationScenario
 )
 
 # Individual subsystems
@@ -57,6 +64,14 @@ __all__ = [
     "WorldSnapshot",
     "MemoryPattern",
     "APIResponse",
+    
+    # Forward Simulation Models
+    "SimulationResult",
+    "WhatIfAnalysis",
+    "AgentQuestion",
+    "SimulationHealth",
+    "SimulationConfig",
+    "ForwardSimulationScenario",
     
     # Subsystems
     "Coordinator",

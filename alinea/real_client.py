@@ -3,12 +3,16 @@ Real Alinea Client that connects to the actual alinea-ai backend.
 """
 import asyncio
 import aiohttp
+import logging
 from typing import Dict, List, Any, Optional
 from datetime import datetime
 import uuid
 
 from .models import *
 from .exceptions import *
+
+# Configure logger
+logger = logging.getLogger(__name__)
 
 
 class RealAlineaClient:
@@ -336,3 +340,284 @@ class RealAlineaClient:
             "overall_health": "healthy",
             "connected_to_backend": True
         }
+    
+    # ========================================
+    # Forward Simulation API Methods (NEW)
+    # ========================================
+    
+    async def simulate_action(
+        self,
+        agent_id: str,
+        action: str,
+        resources: List[str],
+        look_ahead_minutes: int = 5,
+        context: Optional[Dict[str, Any]] = None
+    ) -> SimulationResult:
+        """
+        🔮 Simulate an action before execution to predict conflicts and risks.
+        
+        This is the core forward simulation method that LLM agents use to make
+        intelligent decisions by seeing potential conflicts before they happen.
+        
+        Args:
+            agent_id: The agent planning the action
+            action: The action to simulate
+            resources: Resources the action would affect
+            look_ahead_minutes: How far into the future to simulate (default: 5)
+            context: Additional context for the simulation
+            
+        Returns:
+            SimulationResult with risk assessment and recommendations
+        """
+        if context is None:
+            context = {}
+            
+        data = {
+            "agent_id": agent_id,
+            "action": action,
+            "resources": resources,
+            "look_ahead_minutes": look_ahead_minutes,
+            "context": context
+        }
+        
+        try:
+            response = await self.post("/api/simulation/simulate-action", data)
+            
+            return SimulationResult(
+                agent_id=agent_id,
+                action=action,
+                resources=resources,
+                risk_score=response.get("risk_score", 0.0),
+                safe_to_proceed=response.get("safe_to_proceed", True),
+                predicted_conflicts=response.get("predicted_conflicts", []),
+                alternative_timing=response.get("alternative_timing"),
+                recommendations=response.get("recommendations", []),
+                confidence=response.get("confidence", 0.5),
+                look_ahead_minutes=look_ahead_minutes
+            )
+            
+        except Exception as e:
+            logger.warning(f"Simulation failed, using fallback: {e}")
+            # Graceful fallback for when simulation isn't available
+            return SimulationResult(
+                agent_id=agent_id,
+                action=action,
+                resources=resources,
+                risk_score=0.1,  # Low risk by default
+                safe_to_proceed=True,
+                predicted_conflicts=[],
+                recommendations=["Simulation unavailable - proceed with caution"],
+                confidence=0.3
+            )
+    
+    async def what_if_analysis(self, question: str) -> WhatIfAnalysis:
+        """
+        🤔 Natural language what-if analysis for planning and decision making.
+        
+        Perfect for LLM agents to ask strategic questions like:
+        - "What if we scale up the payment processing system?"
+        - "What would happen if agent_2 goes offline during peak hours?"
+        - "How would increasing batch size affect overall throughput?"
+        
+        Args:
+            question: Natural language question about hypothetical scenarios
+            
+        Returns:
+            WhatIfAnalysis with insights and recommendations
+        """
+        data = {"question": question}
+        
+        try:
+            response = await self.post("/api/simulation/what-if-analysis", data)
+            
+            return WhatIfAnalysis(
+                question=question,
+                analysis=response.get("analysis", "Analysis not available"),
+                predicted_outcomes=response.get("predicted_outcomes", []),
+                risk_factors=response.get("risk_factors", []),
+                recommendations=response.get("recommendations", []),
+                confidence=response.get("confidence", 0.5)
+            )
+            
+        except Exception as e:
+            logger.warning(f"What-if analysis failed: {e}")
+            return WhatIfAnalysis(
+                question=question,
+                analysis=f"Unable to analyze: {question}. Simulation service unavailable.",
+                predicted_outcomes=[],
+                risk_factors=["Simulation service unavailable"],
+                recommendations=["Retry when simulation service is restored"],
+                confidence=0.0
+            )
+    
+    async def get_simulation_health(self) -> SimulationHealth:
+        """
+        📊 Get health and performance metrics of the simulation system.
+        
+        Returns:
+            SimulationHealth with detailed metrics about prediction accuracy
+        """
+        try:
+            response = await self.get("/api/simulation/health")
+            
+            return SimulationHealth(
+                simulation_enabled=response.get("simulation_enabled", False),
+                prediction_accuracy=response.get("prediction_accuracy", 0.0),
+                average_processing_time_ms=response.get("average_processing_time_ms", 0.0),
+                total_simulations_run=response.get("total_simulations_run", 0),
+                successful_predictions=response.get("successful_predictions", 0),
+                failed_predictions=response.get("failed_predictions", 0),
+                system_load=response.get("system_load", 0.0)
+            )
+            
+        except Exception as e:
+            logger.warning(f"Failed to get simulation health: {e}")
+            return SimulationHealth(
+                simulation_enabled=False,
+                prediction_accuracy=0.0,
+                average_processing_time_ms=0.0,
+                total_simulations_run=0,
+                successful_predictions=0,
+                failed_predictions=0,
+                system_load=0.0
+            )
+    
+    async def get_agent_questions(
+        self,
+        agent_id: str,
+        action: str,
+        resources: List[str],
+        context: Optional[Dict[str, Any]] = None
+    ) -> List[AgentQuestion]:
+        """
+        ❓ Get personalized decision-support questions for an agent.
+        
+        These questions help LLM agents make better decisions by considering
+        important factors they might have missed.
+        
+        Args:
+            agent_id: The agent requesting questions
+            action: The action being considered
+            resources: Resources involved
+            context: Additional context
+            
+        Returns:
+            List of AgentQuestion with personalized decision support
+        """
+        if context is None:
+            context = {}
+            
+        data = {
+            "agent_id": agent_id,
+            "action": action,
+            "resources": resources,
+            "context": context
+        }
+        
+        try:
+            response = await self.post("/api/simulation/agent-questions", data)
+            
+            questions = []
+            for q_data in response.get("questions", []):
+                questions.append(AgentQuestion(
+                    question_id=q_data.get("question_id", ""),
+                    question_text=q_data.get("question_text", ""),
+                    question_type=q_data.get("question_type", "general"),
+                    context=q_data.get("context", {}),
+                    priority=q_data.get("priority", 3),
+                    suggested_answers=q_data.get("suggested_answers", [])
+                ))
+            
+            return questions
+            
+        except Exception as e:
+            logger.warning(f"Failed to get agent questions: {e}")
+            return [
+                AgentQuestion(
+                    question_id="fallback_q1",
+                    question_text="Is this the optimal time to perform this action?",
+                    question_type="timing",
+                    context={"action": action, "resources": resources},
+                    priority=2,
+                    suggested_answers=["Yes", "No", "Wait for better conditions"]
+                )
+            ]
+    
+    async def get_simulation_config(self) -> SimulationConfig:
+        """
+        ⚙️ Get current simulation system configuration.
+        
+        Returns:
+            SimulationConfig with current system settings
+        """
+        try:
+            response = await self.get("/api/simulation/config")
+            
+            return SimulationConfig(
+                enabled=response.get("enabled", True),
+                default_look_ahead_minutes=response.get("default_look_ahead_minutes", 5),
+                max_look_ahead_minutes=response.get("max_look_ahead_minutes", 60),
+                prediction_confidence_threshold=response.get("prediction_confidence_threshold", 0.3),
+                risk_score_threshold=response.get("risk_score_threshold", 0.7),
+                max_concurrent_simulations=response.get("max_concurrent_simulations", 10),
+                cache_results=response.get("cache_results", True),
+                cache_ttl_seconds=response.get("cache_ttl_seconds", 300)
+            )
+            
+        except Exception as e:
+            logger.warning(f"Failed to get simulation config: {e}")
+            return SimulationConfig()  # Return default config
+    
+    async def run_forward_simulation(
+        self,
+        scenario: ForwardSimulationScenario
+    ) -> Dict[str, Any]:
+        """
+        🎯 Run complex forward simulation scenarios for advanced planning.
+        
+        This is for sophisticated multi-agent scenario testing where you want
+        to simulate complex interactions over longer time periods.
+        
+        Args:
+            scenario: ForwardSimulationScenario with complete scenario definition
+            
+        Returns:
+            Dict with detailed simulation results and analysis
+        """
+        data = {
+            "scenario_id": scenario.scenario_id,
+            "name": scenario.name,
+            "description": scenario.description,
+            "focus_agents": scenario.focus_agents,
+            "initial_conditions": scenario.initial_conditions,
+            "simulation_duration_minutes": scenario.simulation_duration_minutes,
+            "expected_outcomes": scenario.expected_outcomes
+        }
+        
+        try:
+            response = await self.post("/api/simulation/run-scenario", data)
+            
+            return {
+                "scenario_id": scenario.scenario_id,
+                "status": response.get("status", "completed"),
+                "simulation_results": response.get("simulation_results", {}),
+                "predicted_timeline": response.get("predicted_timeline", []),
+                "risk_analysis": response.get("risk_analysis", {}),
+                "recommendations": response.get("recommendations", []),
+                "confidence_score": response.get("confidence_score", 0.5),
+                "execution_time_ms": response.get("execution_time_ms", 0)
+            }
+            
+        except Exception as e:
+            logger.warning(f"Forward simulation scenario failed: {e}")
+            return {
+                "scenario_id": scenario.scenario_id,
+                "status": "failed",
+                "error": str(e),
+                "simulation_results": {},
+                "predicted_timeline": [],
+                "risk_analysis": {"error": "Simulation unavailable"},
+                "recommendations": ["Retry when simulation service is available"],
+                "confidence_score": 0.0,
+                "execution_time_ms": 0
+            }
