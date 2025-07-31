@@ -1,4 +1,4 @@
-﻿# 🚀 Alinea SDK for Python
+# 🚀 Alinea SDK for Python
 
 **Memory-First Coordination SDK for Multi-Agent Systems**
 
@@ -22,7 +22,11 @@ Connect your multi-agent systems to the powerful Alinea-AI backend for **memory-
 ### 1. Installation
 
 ```bash
+<<<<<<< HEAD
 git clone https://github.com/sebhunte/alinea-sdk-python.git
+=======
+git clone https://github.com/your-org/alinea-sdk-python.git
+>>>>>>> 192d6d2f7e8cb81197e8653bdd69966bf2eafca4
 cd alinea-sdk-python
 pip install -e .
 ```
@@ -155,6 +159,7 @@ async def simple_agent():
 result = asyncio.run(simple_agent())
 ```
 
+<<<<<<< HEAD
 ### LLM-Based Research Assistant Workflow
 
 ```python
@@ -162,6 +167,8 @@ result = asyncio.run(simple_agent())
 # Multi-agent LLM system with Research, Analysis, Writing & Review agents
 ```
 
+=======
+>>>>>>> 192d6d2f7e8cb81197e8653bdd69966bf2eafca4
 ### Multi-Agent Trading System
 
 ```python
@@ -178,6 +185,7 @@ ALINEA_API_KEY=alinea_sk_your_secure_32_char_key_here
 ALINEA_BASE_URL=http://localhost:8000
 ```
 
+<<<<<<< HEAD
 ### API Key Management
 
 ```python
@@ -195,6 +203,9 @@ The repository includes a comprehensive `.gitignore` that prevents committing:
 - API keys
 - Temporary files
 - Database files
+=======
+
+>>>>>>> 192d6d2f7e8cb81197e8653bdd69966bf2eafca4
 
 ## 📁 **Project Structure**
 
@@ -208,7 +219,10 @@ alinea-sdk-python/
 ├── examples/                 # Usage examples
 │   ├── quickstart.py         # Simple example
 │   ├── real_backend_demo.py  # Complete demo
+<<<<<<< HEAD
 │   ├── llm_research_workflow.py  # LLM-based workflow
+=======
+>>>>>>> 192d6d2f7e8cb81197e8653bdd69966bf2eafca4
 │   └── demo_with_mock_backend.py
 ├── tests/                    # Test cases
 ├── scripts/                  # Utility scripts
@@ -234,6 +248,7 @@ export ALINEA_API_KEY=your_api_key_here
 # Run quickstart
 python examples/quickstart.py
 
+<<<<<<< HEAD
 # Run LLM research workflow
 python examples/llm_research_workflow.py
 
@@ -243,6 +258,9 @@ python examples/real_backend_demo.py
 # Run with mock backend (for testing)
 python examples/demo_with_mock_backend.py
 ```
+=======
+
+>>>>>>> 192d6d2f7e8cb81197e8653bdd69966bf2eafca4
 
 ### Testing Connection
 
@@ -253,6 +271,7 @@ python examples/real_backend_test.py
 
 ## 🐛 **Troubleshooting**
 
+<<<<<<< HEAD
 ### Common Issues
 
 **Connection Refused:**
@@ -266,6 +285,8 @@ python examples/real_backend_test.py
 ❌ Authentication failed. Check your API key.
 ```
 **Solution:** Verify your `ALINEA_API_KEY` environment variable is set correctly
+=======
+>>>>>>> 192d6d2f7e8cb81197e8653bdd69966bf2eafca4
 
 **Import Errors:**
 ```
@@ -285,6 +306,7 @@ ModuleNotFoundError: No module named 'alinea'
 
 This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
 
+<<<<<<< HEAD
 ## 🔗 **Related Projects**
 
 - [Alinea-AI Backend](https://github.com/your-org/alinea-ai) - The backend service
@@ -299,3 +321,8 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 ---
 
 **Built with ❤️ for the multi-agent future** 🤖✨
+=======
+---
+
+**Built with ❤️ for the multi-agent future** 🤖✨
+>>>>>>> 192d6d2f7e8cb81197e8653bdd69966bf2eafca4
